@@ -1,15 +1,18 @@
+import os
 from ui_main import Ui_MainWindow
 from src.parameter_vk import Parameter_VK
 from src.parameter_p_dn_max import Parameter_P_DN_MAX
+
 
 class Ui_Funtion(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
         self.MainWindow = MainWindow
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
         
         #! Tab
         #? Tab calculation vk
-        path_image_formula = './images_formula/vk.jpg'
+        path_image_formula = os.path.join(self.base_dir, 'images_formula/vk.jpg')
         formulas = [self.image_calculation_p_formula, path_image_formula]
         means = [self.input_mean_vk_ik, self.input_mean_vk_m, self.input_mean_vk_zk, self.input_mean_vk_cty, self.input_mean_vk_d]
         var = [[self.checkbox_var_vk_ik, self.input_var_vk_ik], 
@@ -22,7 +25,7 @@ class Ui_Funtion(Ui_MainWindow):
         self.tab_calculation_parameter_vk = Parameter_VK(formulas, means, var, outputs)
         
         
-        path_image_formula = './images_formula/p_dn_max.jpg'
+        path_image_formula = os.path.join(self.base_dir, 'images_formula/p_dn_max.jpg')
         formulas = [self.image_calculation_p_formula, path_image_formula]
         means = [self.input_mean_p_dn_max_q, self.input_mean_p_dn_max_w, self.input_mean_p_dn_max_mu, self.input_mean_p_dn_max_pT]
         var = [[self.checkbox_var_p_dn_max_q, self.input_var_p_dn_max_q],
