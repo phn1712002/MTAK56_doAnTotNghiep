@@ -77,6 +77,16 @@ class Ui_Funtion(Ui_MainWindow):
         self.btn_del_node.clicked.connect(self.delete_selected_node)
         self.btn_fit_flowchart.clicked.connect(self.fit_flowchart_to_view)
         self.graphicsView.scene().selectionChanged.connect(self.handle_selection_changed)
+        self.btn_zoomout_flowchart.clicked.connect(self.zoom_in_flowchart)
+        self.btn_zoomin_flowchart.clicked.connect(self.zoom_out_flowchart)
+
+    def zoom_in_flowchart(self):
+        """Zoom in the flowchart view"""
+        self.graphicsView.scale(1.2, 1.2)
+
+    def zoom_out_flowchart(self):
+        """Zoom out the flowchart view"""
+        self.graphicsView.scale(0.8, 0.8)
 
     def fit_flowchart_to_view(self):
         """Fit all flowchart nodes to visible view with padding"""
@@ -122,7 +132,7 @@ class Ui_Funtion(Ui_MainWindow):
             self.scene.removeItem(self.selected_node)
             self.selected_node = None
             self.btn_del_node.setEnabled(False)
-
+        
     def process_tabwidget_rating_parameter_currentchanged(self):
         index_tab_current = str(self.tabWidget_rating_parameter.currentIndex())
         tab_current = self.LIST_TAB_CALCULATION_PARAMETER.get(index_tab_current)
