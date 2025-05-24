@@ -90,13 +90,6 @@ class Ui_Funtion(Ui_MainWindow):
         """Handle mouse move events to detect node hover and update temporary arrow"""
         item = self.scene.itemAt(event.pos(), self.graphicsView.transform())
         
-        # Only enable button if not already in connection mode
-        if not self.connection_start_node:
-            if isinstance(item, NodeRectangle) or self.selected_node:
-                self.btn_con_node.setEnabled(True)
-            else:
-                self.btn_con_node.setEnabled(False)
-            
         # Update temporary arrow position during connection
         if self.connection_start_node and self.current_arrow:
             scene_pos = self.graphicsView.mapToScene(event.pos())
@@ -161,8 +154,8 @@ class Ui_Funtion(Ui_MainWindow):
             has_selection = len(selected) > 0
             self.btn_del_node.setEnabled(has_selection)
             
-            # Only enable connection button when not in connection mode
-            self.btn_con_node.setEnabled(has_selection and not self.connection_start_node)
+            # Enable connection button when node is selected (same as delete button)
+            self.btn_con_node.setEnabled(has_selection)
             
             if not selected:
                 self.selected_node = None
@@ -185,11 +178,17 @@ class Ui_Funtion(Ui_MainWindow):
             self.selected_node = None
 
     def delete_selected_node(self):
-        """Delete the currently selected node"""
+        """Delete the currently selected node and its connected arrows"""
         if self.selected_node:
+            # Remove all connected arrows first
+            for arrow in list(self.selected_node.connected_arrows):
+                self.scene.removeItem(arrow)
+                
+            # Remove the node
             self.scene.removeItem(self.selected_node)
             self.selected_node = None
             self.btn_del_node.setEnabled(False)
+            self.scene.update()
         
     def process_tabwidget_rating_parameter_currentchanged(self):
         index_tab_current = str(self.tabWidget_rating_parameter.currentIndex())
