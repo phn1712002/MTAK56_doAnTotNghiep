@@ -1,7 +1,8 @@
 import os
-from PySide6.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsTextItem
-from PySide6.QtCore import Qt, QPointF
-from PySide6.QtGui import QPainter, QBrush, QColor, QPen, QFont, QTextCharFormat, QTextCursor
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPainter
+from src.flowchart import NodeRectangle, Arrow
 from ui_main import Ui_MainWindow
 from src.parameter_vk import Parameter_VK
 from src.parameter_p_dn_max import Parameter_P_DN_MAX
@@ -20,12 +21,15 @@ class Ui_Funtion(Ui_MainWindow):
         self.graphicsView.setFocusPolicy(Qt.StrongFocus)
         self.graphicsView.setFocus()
         
-        # Variables for rectangle
+        # Variables for rectangle and connection
         self.current_rect = None
         self.selected_node = None
+        self.connection_start_node = None
+        self.current_arrow = None
         
-        # Disable delete button initially
+        # Disable buttons initially
         self.btn_del_node.setEnabled(False)
+        self.btn_con_node.setEnabled(False)
         
         #! Tab
         #? Tab calculation vk
@@ -75,10 +79,37 @@ class Ui_Funtion(Ui_MainWindow):
         self.btn_calcutation_parameter.clicked.connect(self.lambda_process_click_btn_calculation_parameter)
         self.btn_insert_node.clicked.connect(self.insert_flowchart_rectangle)
         self.btn_del_node.clicked.connect(self.delete_selected_node)
+        self.btn_con_node.clicked.connect(self.handle_connection)
         self.btn_fit_flowchart.clicked.connect(self.fit_flowchart_to_view)
         self.graphicsView.scene().selectionChanged.connect(self.handle_selection_changed)
+        self.graphicsView.mouseMoveEvent = self.handle_mouse_move
         self.btn_zoomout_flowchart.clicked.connect(self.zoom_in_flowchart)
         self.btn_zoomin_flowchart.clicked.connect(self.zoom_out_flowchart)
+
+    def handle_mouse_move(self, event):
+        """Handle mouse move events to detect node hover and update temporary arrow"""
+        item = self.scene.itemAt(event.pos(), self.graphicsView.transform())
+        
+        # Only enable button if not already in connection mode
+        if not self.connection_start_node:
+            if isinstance(item, NodeRectangle) or self.selected_node:
+                self.btn_con_node.setEnabled(True)
+            else:
+                self.btn_con_node.setEnabled(False)
+            
+        # Update temporary arrow position during connection
+        if self.connection_start_node and self.current_arrow:
+            scene_pos = self.graphicsView.mapToScene(event.pos())
+            self.current_arrow.update_position(temp_end_pos=scene_pos)
+            
+        QGraphicsView.mouseMoveEvent(self.graphicsView, event)
+
+    def handle_connection(self):
+        """Start node connection process"""
+        if self.selected_node and not self.connection_start_node:
+            self.connection_start_node = self.selected_node
+            self.current_arrow = Arrow(self.connection_start_node)
+            self.scene.addItem(self.current_arrow)
 
     def zoom_in_flowchart(self):
         """Zoom in the flowchart view"""
@@ -121,10 +152,37 @@ class Ui_Funtion(Ui_MainWindow):
             self.graphicsView.setFocus()
 
     def handle_selection_changed(self):
-        """Enable/disable delete button based on selection"""
-        selected = self.scene.selectedItems()
-        self.btn_del_node.setEnabled(len(selected) > 0)
-        self.selected_node = selected[0] if selected else None
+        """Handle node selection and automatic connection"""
+        if not self.scene:
+            return
+            
+        try:
+            selected = self.scene.selectedItems()
+            has_selection = len(selected) > 0
+            self.btn_del_node.setEnabled(has_selection)
+            
+            # Only enable connection button when not in connection mode
+            self.btn_con_node.setEnabled(has_selection and not self.connection_start_node)
+            
+            if not selected:
+                self.selected_node = None
+                return
+                
+            self.selected_node = selected[0]
+            
+            # Automatic connection logic
+            if self.connection_start_node and self.selected_node != self.connection_start_node:
+                # Complete connection
+                self.current_arrow.set_end_node(self.selected_node)
+                self.current_arrow.update_position()
+                self.connection_start_node = None
+                self.btn_con_node.setEnabled(False)
+                
+        except RuntimeError:
+            # Scene was deleted
+            self.btn_del_node.setEnabled(False)
+            self.btn_con_node.setEnabled(False)
+            self.selected_node = None
 
     def delete_selected_node(self):
         """Delete the currently selected node"""
