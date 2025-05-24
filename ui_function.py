@@ -165,11 +165,10 @@ class Ui_Funtion(Ui_MainWindow):
             
             # Automatic connection logic
             if self.connection_start_node and self.selected_node != self.connection_start_node:
-                # Complete connection
+                # Complete connection but keep button enabled
                 self.current_arrow.set_end_node(self.selected_node)
                 self.current_arrow.update_position()
                 self.connection_start_node = None
-                self.btn_con_node.setEnabled(False)
                 
         except RuntimeError:
             # Scene was deleted
