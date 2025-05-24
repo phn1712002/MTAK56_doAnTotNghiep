@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'maininXAJZ.ui'
+## Form generated from reading UI file 'mainNBvgUJ.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,9 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QHBoxLayout,
-    QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QSpacerItem, QTabWidget, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QDoubleSpinBox, QGraphicsView,
+    QHBoxLayout, QLabel, QMainWindow, QPushButton,
+    QSizePolicy, QSpacerItem, QTabWidget, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -53,10 +54,9 @@ class Ui_MainWindow(object):
         font1 = QFont()
         font1.setPointSize(12)
         self.centralwidget.setFont(font1)
-        self.verticalLayout_4 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.tabWidget_rating = QTabWidget(self.centralwidget)
         self.tabWidget_rating.setObjectName(u"tabWidget_rating")
+        self.tabWidget_rating.setGeometry(QRect(9, 9, 787, 620))
         self.tab_info = QWidget()
         self.tab_info.setObjectName(u"tab_info")
         self.verticalLayout_2 = QVBoxLayout(self.tab_info)
@@ -571,10 +571,50 @@ class Ui_MainWindow(object):
         self.tabWidget_rating.addTab(self.tab_rating_parameter, "")
         self.tab_rating_strucs = QWidget()
         self.tab_rating_strucs.setObjectName(u"tab_rating_strucs")
+        self.horizontalLayout = QHBoxLayout(self.tab_rating_strucs)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.group_btn_flowchart = QVBoxLayout()
+        self.group_btn_flowchart.setObjectName(u"group_btn_flowchart")
+        self.btn_insert_node = QPushButton(self.tab_rating_strucs)
+        self.btn_insert_node.setObjectName(u"btn_insert_node")
+        self.btn_insert_node.setFont(font3)
+
+        self.group_btn_flowchart.addWidget(self.btn_insert_node)
+
+        self.btn_del_node = QPushButton(self.tab_rating_strucs)
+        self.btn_del_node.setObjectName(u"btn_del_node")
+        self.btn_del_node.setFont(font3)
+
+        self.group_btn_flowchart.addWidget(self.btn_del_node)
+
+        self.btn_con_node = QPushButton(self.tab_rating_strucs)
+        self.btn_con_node.setObjectName(u"btn_con_node")
+        self.btn_con_node.setFont(font3)
+
+        self.group_btn_flowchart.addWidget(self.btn_con_node)
+
+        self.btn_save_flowchart = QPushButton(self.tab_rating_strucs)
+        self.btn_save_flowchart.setObjectName(u"btn_save_flowchart")
+        self.btn_save_flowchart.setFont(font3)
+
+        self.group_btn_flowchart.addWidget(self.btn_save_flowchart)
+
+        self.btn_load_flowchart = QPushButton(self.tab_rating_strucs)
+        self.btn_load_flowchart.setObjectName(u"btn_load_flowchart")
+        self.btn_load_flowchart.setFont(font3)
+
+        self.group_btn_flowchart.addWidget(self.btn_load_flowchart)
+
+        self.group_btn_flowchart.setStretch(4, 1)
+
+        self.horizontalLayout.addLayout(self.group_btn_flowchart)
+
+        self.graphicsView = QGraphicsView(self.tab_rating_strucs)
+        self.graphicsView.setObjectName(u"graphicsView")
+
+        self.horizontalLayout.addWidget(self.graphicsView)
+
         self.tabWidget_rating.addTab(self.tab_rating_strucs, "")
-
-        self.verticalLayout_4.addWidget(self.tabWidget_rating)
-
         MainWindow.setCentralWidget(self.centralwidget)
         QWidget.setTabOrder(self.tabWidget_rating, self.tabWidget_rating_parameter)
         QWidget.setTabOrder(self.tabWidget_rating_parameter, self.input_mean_vk_ik)
@@ -610,7 +650,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget_rating.setCurrentIndex(1)
+        self.tabWidget_rating.setCurrentIndex(2)
         self.tabWidget_rating_parameter.setCurrentIndex(1)
 
 
@@ -655,6 +695,11 @@ class Ui_MainWindow(object):
         self.label_const_calculation_p_result.setText(QCoreApplication.translate("MainWindow", u"K\u1ebft qu\u1ea3:", None))
         self.calculation_p_result.setText(QCoreApplication.translate("MainWindow", u"0", None))
         self.tabWidget_rating.setTabText(self.tabWidget_rating.indexOf(self.tab_rating_parameter), QCoreApplication.translate("MainWindow", u"\u0110\u00e1nh gi\u00e1 theo tham s\u1ed1 thi\u1ebft k\u1ebf", None))
+        self.btn_insert_node.setText(QCoreApplication.translate("MainWindow", u"Th\u00eam", None))
+        self.btn_del_node.setText(QCoreApplication.translate("MainWindow", u"X\u00f3a", None))
+        self.btn_con_node.setText(QCoreApplication.translate("MainWindow", u"Li\u00ean k\u1ebft", None))
+        self.btn_save_flowchart.setText(QCoreApplication.translate("MainWindow", u"Sao l\u01b0u", None))
+        self.btn_load_flowchart.setText(QCoreApplication.translate("MainWindow", u"T\u1ea3i l\u1ea1i", None))
         self.tabWidget_rating.setTabText(self.tabWidget_rating.indexOf(self.tab_rating_strucs), QCoreApplication.translate("MainWindow", u"\u0110\u00e1nh gi\u00e1 theo k\u1ebft c\u1ea5u", None))
     # retranslateUi
 

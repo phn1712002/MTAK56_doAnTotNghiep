@@ -1,14 +1,31 @@
 import os
+from PySide6.QtWidgets import QGraphicsRectItem, QGraphicsScene, QGraphicsTextItem
+from PySide6.QtCore import Qt, QPointF
+from PySide6.QtGui import QPainter, QBrush, QColor, QPen, QFont, QTextCharFormat, QTextCursor
 from ui_main import Ui_MainWindow
 from src.parameter_vk import Parameter_VK
 from src.parameter_p_dn_max import Parameter_P_DN_MAX
-
+from src.flowchart import NodeRectangle
 
 class Ui_Funtion(Ui_MainWindow):
     def setupUi(self, MainWindow):
         super().setupUi(MainWindow)
         self.MainWindow = MainWindow
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Setup graphics scene for flowchart
+        self.scene = QGraphicsScene()
+        self.graphicsView.setScene(self.scene)
+        self.graphicsView.setRenderHint(QPainter.Antialiasing)
+        self.graphicsView.setFocusPolicy(Qt.StrongFocus)
+        self.graphicsView.setFocus()
+        
+        # Variables for rectangle
+        self.current_rect = None
+        self.selected_node = None
+        
+        # Disable delete button initially
+        self.btn_del_node.setEnabled(False)
         
         #! Tab
         #? Tab calculation vk
@@ -42,22 +59,51 @@ class Ui_Funtion(Ui_MainWindow):
             '1': self.tab_calculation_parameter_p_dn_max
         }
 
+
         #! Start
         INDEX_TAB_START = 0
         self.tabWidget_rating.setCurrentIndex(INDEX_TAB_START)
         self.tabWidget_rating_parameter.setCurrentIndex(INDEX_TAB_START)
         self.LIST_TAB_CALCULATION_PARAMETER[str(INDEX_TAB_START)].set_formula()
         self.process_click_btn_calculation_parameter = self.LIST_TAB_CALCULATION_PARAMETER.get(str(INDEX_TAB_START)).process_click_btn_calculation
-        
+
+
     def processSignalAndSlot(self):
         self.tab_calculation_parameter_vk.processSignalAndSlot()
         self.tab_calculation_parameter_p_dn_max.processSignalAndSlot()
         self.tabWidget_rating_parameter.currentChanged.connect(self.process_tabwidget_rating_parameter_currentchanged)
         self.btn_calcutation_parameter.clicked.connect(self.lambda_process_click_btn_calculation_parameter)
+        self.btn_insert_node.clicked.connect(self.insert_flowchart_rectangle)
+        self.btn_del_node.clicked.connect(self.delete_selected_node)
+        self.graphicsView.scene().selectionChanged.connect(self.handle_selection_changed)
 
     def lambda_process_click_btn_calculation_parameter(self):
         return self.process_click_btn_calculation_parameter()
     
+    def insert_flowchart_rectangle(self):
+        path_config_flowchart = os.path.join(self.base_dir, 'config/flowchart.json')
+        self.current_rect = NodeRectangle(0, 0, path_config_flowchart)
+        self.current_rect.setPos(0, 0)
+        self.scene.addItem(self.current_rect)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        if self.tabWidget_rating.currentIndex() == 2:  # Tab rating strucs
+            self.graphicsView.setFocus()
+
+    def handle_selection_changed(self):
+        """Enable/disable delete button based on selection"""
+        selected = self.scene.selectedItems()
+        self.btn_del_node.setEnabled(len(selected) > 0)
+        self.selected_node = selected[0] if selected else None
+
+    def delete_selected_node(self):
+        """Delete the currently selected node"""
+        if self.selected_node:
+            self.scene.removeItem(self.selected_node)
+            self.selected_node = None
+            self.btn_del_node.setEnabled(False)
+
     def process_tabwidget_rating_parameter_currentchanged(self):
         index_tab_current = str(self.tabWidget_rating_parameter.currentIndex())
         tab_current = self.LIST_TAB_CALCULATION_PARAMETER.get(index_tab_current)

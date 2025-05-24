@@ -1,0 +1,21 @@
+{
+    "rectangle": {
+        "width": 200,
+        "height": 200,
+        "border_width": 3,
+        "fill_color": "#FFFFFF"
+    },
+    "id_text": {
+        "pos_x": -5,
+        "pos_y": -30,
+        "font_size": 13,
+        "text_color": "#FFFFFF",
+        "outline_color": "#000000",
+        "outline_width": 1,
+        "bold": true
+    },
+    "random_id": {
+        "min": 1000,
+        "max": 9999
+    }
+}

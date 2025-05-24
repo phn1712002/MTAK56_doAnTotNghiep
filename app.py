@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QApplication, QMainWindow
 from ui_function import Ui_Funtion
-from PySide6.QtGui import QPixmap
 
 app = QApplication([])
 qMainWindow = QMainWindow()
