@@ -75,7 +75,26 @@ class Ui_Funtion(Ui_MainWindow):
         self.btn_calcutation_parameter.clicked.connect(self.lambda_process_click_btn_calculation_parameter)
         self.btn_insert_node.clicked.connect(self.insert_flowchart_rectangle)
         self.btn_del_node.clicked.connect(self.delete_selected_node)
+        self.btn_fit_flowchart.clicked.connect(self.fit_flowchart_to_view)
         self.graphicsView.scene().selectionChanged.connect(self.handle_selection_changed)
+
+    def fit_flowchart_to_view(self):
+        """Fit all flowchart nodes to visible view with padding"""
+        if not self.scene.items():
+            return
+            
+        # Calculate union of all node bounds
+        rect = None
+        for item in self.scene.items():
+            if isinstance(item, NodeRectangle):
+                item_rect = item.sceneBoundingRect()
+                rect = item_rect if rect is None else rect.united(item_rect)
+        
+        if rect:
+            # Add 10% padding
+            padding = rect.width() * 0.1
+            rect.adjust(-padding, -padding, padding, padding)
+            self.graphicsView.fitInView(rect, Qt.KeepAspectRatio)
 
     def lambda_process_click_btn_calculation_parameter(self):
         return self.process_click_btn_calculation_parameter()

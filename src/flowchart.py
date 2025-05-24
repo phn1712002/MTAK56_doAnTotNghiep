@@ -66,6 +66,12 @@ class NodeRectangle(QGraphicsRectItem):
         return super().itemChange(change, value)
 
     def mousePressEvent(self, event):
-        """Handle mouse press to ensure selection works"""
-        self.setSelected(True)
+        """Handle mouse press with proper selection behavior"""
+        modifiers = event.modifiers()
+        if not (modifiers & Qt.ControlModifier):
+            # Only clear selection if clicking without Ctrl on an unselected node
+            if not self.isSelected():
+                scene = self.scene()
+                if scene:
+                    scene.clearSelection()
         super().mousePressEvent(event)
