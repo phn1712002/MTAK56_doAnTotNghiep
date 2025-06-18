@@ -3,13 +3,21 @@
         "width": 200,
         "height": 200,
         "border_width": 3,
-        "fill_color": "#FFFFFF"
+        "fill_color": "#FFFFFF",
+        "padding": 100
     },
     "id_text": {
         "pos_x": -5,
         "pos_y": -30,
         "font_size": 13,
         "text_color": "#FFFFFF",
+        "outline_color": "#000000",
+        "outline_width": 1,
+        "bold": true
+    },
+    "info_text": {
+        "font_size": 13,
+        "text_color": "#FF0000",
         "outline_color": "#000000",
         "outline_width": 1,
         "bold": true

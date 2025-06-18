@@ -1,5 +1,5 @@
 import os
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView, QInputDialog
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter
 from src.flowchart import NodeRectangle, Arrow
@@ -30,6 +30,8 @@ class Ui_Funtion(Ui_MainWindow):
         # Disable buttons initially
         self.btn_del_node.setEnabled(False)
         self.btn_con_node.setEnabled(False)
+        self.btn_change_node.setEnabled(False)
+        self.btn_calcutation_strucs.setEnabled(False)
         
         #! Tab
         #? Tab calculation vk
@@ -71,7 +73,6 @@ class Ui_Funtion(Ui_MainWindow):
         self.LIST_TAB_CALCULATION_PARAMETER[str(INDEX_TAB_START)].set_formula()
         self.process_click_btn_calculation_parameter = self.LIST_TAB_CALCULATION_PARAMETER.get(str(INDEX_TAB_START)).process_click_btn_calculation
 
-
     def processSignalAndSlot(self):
         self.tab_calculation_parameter_vk.processSignalAndSlot()
         self.tab_calculation_parameter_p_dn_max.processSignalAndSlot()
@@ -79,12 +80,20 @@ class Ui_Funtion(Ui_MainWindow):
         self.btn_calcutation_parameter.clicked.connect(self.lambda_process_click_btn_calculation_parameter)
         self.btn_insert_node.clicked.connect(self.insert_flowchart_rectangle)
         self.btn_del_node.clicked.connect(self.delete_selected_node)
+        self.btn_change_node.clicked.connect(self.change_selected_node)
         self.btn_con_node.clicked.connect(self.handle_connection)
         self.btn_fit_flowchart.clicked.connect(self.fit_flowchart_to_view)
         self.graphicsView.scene().selectionChanged.connect(self.handle_selection_changed)
         self.graphicsView.mouseMoveEvent = self.handle_mouse_move
         self.btn_zoomout_flowchart.clicked.connect(self.zoom_in_flowchart)
         self.btn_zoomin_flowchart.clicked.connect(self.zoom_out_flowchart)
+        self.btn_calcutation_strucs.clicked.connect(self.calculate_child_probabilities)
+
+    def calculate_child_probabilities(self):
+        """Calculate and update probability based on child nodes"""
+        if self.selected_node and isinstance(self.selected_node, NodeRectangle):
+            new_prob = self.selected_node.calculate_child_probability()
+            self.calculation_struc_result.setText(f"{new_prob:.4f}")
 
     def handle_mouse_move(self, event):
         """Handle mouse move events to detect node hover and update temporary arrow"""
@@ -103,6 +112,8 @@ class Ui_Funtion(Ui_MainWindow):
             self.connection_start_node = self.selected_node
             self.current_arrow = Arrow(self.connection_start_node)
             self.scene.addItem(self.current_arrow)
+            self.graphicsView.setFocus()  # Ensure view has focus for key events
+            self.graphicsView.viewport().setFocus()  # Additional focus for viewport
 
     def zoom_in_flowchart(self):
         """Zoom in the flowchart view"""
@@ -133,9 +144,35 @@ class Ui_Funtion(Ui_MainWindow):
     def lambda_process_click_btn_calculation_parameter(self):
         return self.process_click_btn_calculation_parameter()
     
+
+    def form_input_info_node(self):
+        # Show input dialog for node name and probability
+        name, ok1 = QInputDialog.getText(
+            self.MainWindow, 
+            "Nhập thông tin Node", 
+            "Tên Node:"
+        )
+        
+        if not ok1:
+            return None
+            
+        prob, ok2 = QInputDialog.getDouble(
+            self.MainWindow,
+            "Nhập thông tin Node",
+            "Xác xuất làm việc (0-1):",
+            0, 0, 1, 2
+        )
+        
+        if not ok2:
+            return None
+        return name, prob
+
     def insert_flowchart_rectangle(self):
         path_config_flowchart = os.path.join(self.base_dir, 'config/flowchart.json')
-        self.current_rect = NodeRectangle(0, 0, path_config_flowchart)
+            
+        # Create node with entered values
+        name, prob = self.form_input_info_node()
+        self.current_rect = NodeRectangle(0, 0, path_config_flowchart, name, prob)
         self.current_rect.setPos(0, 0)
         self.scene.addItem(self.current_rect)
 
@@ -153,9 +190,9 @@ class Ui_Funtion(Ui_MainWindow):
             selected = self.scene.selectedItems()
             has_selection = len(selected) > 0
             self.btn_del_node.setEnabled(has_selection)
-            
-            # Enable connection button when node is selected (same as delete button)
             self.btn_con_node.setEnabled(has_selection)
+            self.btn_change_node.setEnabled(has_selection)
+            self.btn_calcutation_strucs.setEnabled(has_selection)
             
             if not selected:
                 self.selected_node = None
@@ -168,13 +205,37 @@ class Ui_Funtion(Ui_MainWindow):
                 # Complete connection but keep button enabled
                 self.current_arrow.set_end_node(self.selected_node)
                 self.current_arrow.update_position()
+                
+                # Add child node to parent's child_node list
+                if isinstance(self.connection_start_node, NodeRectangle) and isinstance(self.selected_node, NodeRectangle):
+                    self.connection_start_node.child_node.append(self.selected_node)            
                 self.connection_start_node = None
                 
         except RuntimeError:
-            # Scene was deleted
-            self.btn_del_node.setEnabled(False)
-            self.btn_con_node.setEnabled(False)
+            # Scene or buttons were deleted
+            try:
+                if hasattr(self, 'btn_change_node') and self.btn_change_node:
+                    self.btn_change_node.setEnabled(False)
+                if hasattr(self, 'btn_del_node') and self.btn_del_node:
+                    self.btn_del_node.setEnabled(False)
+                if hasattr(self, 'btn_con_node') and self.btn_con_node:
+                    self.btn_con_node.setEnabled(False)
+            except RuntimeError:
+                pass
             self.selected_node = None
+
+    def change_selected_node(self):
+        """Update the selected node's information"""
+        if self.selected_node and isinstance(self.selected_node, NodeRectangle):
+            result = self.form_input_info_node()
+            if result is not None:
+                name, prob = result
+                if name is not None and prob is not None:
+                    self.selected_node.set_node_info(name, prob)
+                    self.scene.update()
+            
+            # Keep the button enabled if node is still selected
+            self.btn_change_node.setEnabled(True)
 
     def delete_selected_node(self):
         """Delete the currently selected node and its connected arrows"""

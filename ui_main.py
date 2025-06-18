@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainqfsdiG.ui'
+## Form generated from reading UI file 'mainMucGor.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -612,6 +612,12 @@ class Ui_MainWindow(object):
 
         self.group_edit_struc.addWidget(self.btn_del_node)
 
+        self.btn_change_node = QPushButton(self.tab_rating_strucs)
+        self.btn_change_node.setObjectName(u"btn_change_node")
+        self.btn_change_node.setFont(font3)
+
+        self.group_edit_struc.addWidget(self.btn_change_node)
+
         self.btn_con_node = QPushButton(self.tab_rating_strucs)
         self.btn_con_node.setObjectName(u"btn_con_node")
         self.btn_con_node.setFont(font3)
@@ -778,6 +784,7 @@ class Ui_MainWindow(object):
         self.btn_save_flowchart.setText(QCoreApplication.translate("MainWindow", u"Sao l\u01b0u", None))
         self.btn_insert_node.setText(QCoreApplication.translate("MainWindow", u"Th\u00eam", None))
         self.btn_del_node.setText(QCoreApplication.translate("MainWindow", u"X\u00f3a", None))
+        self.btn_change_node.setText(QCoreApplication.translate("MainWindow", u"Thay \u0111\u1ed5i", None))
         self.btn_con_node.setText(QCoreApplication.translate("MainWindow", u"Li\u00ean k\u1ebft", None))
         self.btn_fit_flowchart.setText(QCoreApplication.translate("MainWindow", u"V\u1eeba v\u1eb7n", None))
         self.btn_zoomout_flowchart.setText(QCoreApplication.translate("MainWindow", u"+", None))
