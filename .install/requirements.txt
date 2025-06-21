@@ -5,3 +5,5 @@ pyclean
 PyInstaller
 autograd
 scipy
+matplotlib
+pyqtgraph
